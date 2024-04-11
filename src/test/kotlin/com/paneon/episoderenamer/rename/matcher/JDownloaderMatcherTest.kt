@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
 class JDownloaderMatcherTest {
-    private val shows = listOf(Show("My Show"), Show("Another Show Here"))
-    private val matcher = JDownloaderMatcher(shows)
+    //private val shows = listOf(Show("My Show"), Show("Another Show Here"))
+    private val matcher = JDownloaderMatcher()
 
     @Test
     fun matches() {

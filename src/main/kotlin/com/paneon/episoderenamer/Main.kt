@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
     println("Source Directory: $sourceDirectory")
     println("Target Directory: $targetDirectory")
 
-    val matchers = listOf(GermanVerboseMatcher(shows), JDownloaderMatcher(shows))
+    val matchers = listOf(GermanVerboseMatcher(shows), JDownloaderMatcher())
 
     val fileRenamer = FileRenamer(dryRun = dryRun, matchers = matchers, formatter = EpisodeFormatter(), logger = logger)
     fileRenamer.renameFilesInDirectory(sourceDirectoryPath = sourceDirectory)

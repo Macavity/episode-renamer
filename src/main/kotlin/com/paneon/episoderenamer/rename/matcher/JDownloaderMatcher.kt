@@ -1,8 +1,6 @@
 package com.paneon.episoderenamer.rename.matcher
 
-import com.paneon.episoderenamer.shows.Show
-
-class JDownloaderMatcher(private val shows: List<Show>): FileNameMatcher {
+class JDownloaderMatcher: FileNameMatcher {
     private val regex = Regex("(.*?) S(\\d{2})E(\\d{2})")
 
     override fun matches(filename: String): Boolean {
