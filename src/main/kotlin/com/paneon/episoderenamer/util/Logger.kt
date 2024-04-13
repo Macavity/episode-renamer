@@ -6,6 +6,10 @@ class Logger(private val dryRun: Boolean) {
         println("---------------------------")
     }
 
+    fun log(message: String) {
+        println("Error: $message")
+    }
+
     fun infoBlock(originalName: String, newName: String) {
         separator()
         println("File     | $originalName")

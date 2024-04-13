@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
     val matchers = listOf(GermanVerboseMatcher(shows), JDownloaderMatcher())
 
     val fileRenamer = FileRenamer(dryRun = dryRun, matchers = matchers, formatter = EpisodeFormatter(), logger = logger)
-    fileRenamer.renameFilesInDirectory(sourceDirectoryPath = sourceDirectory)
+    fileRenamer.renameFilesInDirectory(sourceDirectoryPath = sourceDirectory, targetDirectoryPath = targetDirectory)
 
     //val fileMover = com.paneon.episoderenamer.move.FileMover(dryRun, logger)
 }

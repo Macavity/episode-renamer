@@ -1,8 +1,6 @@
 package com.paneon.episoderenamer.rename.matcher
 
-import com.paneon.episoderenamer.shows.Show
 import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
 
 class JDownloaderMatcherTest {
