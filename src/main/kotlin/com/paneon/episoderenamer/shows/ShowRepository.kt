@@ -4,7 +4,8 @@ class ShowRepository {
     fun findAll(): List<Show> {
         return listOf(
             Show("Air Gear"),
-            Show("Air Master"),
+            // Re-Add when configuration allows to target different directories
+            // Show("Air Master"),
             Show("Arifureta From Commonplace to World's Strongest"),
             Show("A Certain Scientific Railgun"),
             Show("A Certain Magical Index"),

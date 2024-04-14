@@ -6,11 +6,18 @@ import com.paneon.episoderenamer.rename.matcher.MatchedEpisode
 import com.paneon.episoderenamer.util.Logger
 import java.io.File
 
+enum class Mode {
+    MOVE, COPY
+}
+
+
 class FileRenamer(
     private val dryRun: Boolean,
     private val matchers: List<FileNameMatcher>,
     private val formatter: Formatter,
-    private val logger: Logger
+    mode: Mode,
+    replaceFiles: Boolean,
+    private val logger: Logger,
 ) {
     fun renameFilesInDirectory(sourceDirectoryPath: String, targetDirectoryPath: String) {
         val sourceDirectory = File(sourceDirectoryPath)
@@ -25,7 +32,7 @@ class FileRenamer(
             if (!dryRun) {
                 targetDirectory.mkdirs() // Ensure the target directory exists
             }
-            logger.log("Created target directory at $targetDirectoryPath")
+            logger.info("Created target directory at $targetDirectoryPath")
         }
 
         sourceDirectory.listFiles { file ->
@@ -39,31 +46,31 @@ class FileRenamer(
             }
 
             val newName = formatter.format(matchedEpisode)
+
             val showDirectory = File(targetDirectory, matchedEpisode.show.replace("/", "_")) // Safe directory name
             if (!showDirectory.exists() && !dryRun) {
                 showDirectory.mkdirs()
-                logger.log("Created directory for show: $showDirectory")
+                logger.info("Created directory for show: $showDirectory")
             }
 
             val targetFile = File(showDirectory, newName)
+            val action = if (!dryRun) "✅ Renamed and moved" else "⏸\uFE0F Dry Run"
 
             if (!dryRun) {
-                file.renameTo(targetFile)
+                file.renameTo(targetFile, )
             }
 
-            logger.infoBlock(originalName = file.name, newName = newName)
+            logger.infoBlock(originalName = file.name, newName = newName, targetName = targetFile.parent.toString(), action=action)
         }
     }
 
     private fun matchEpisode(fileName: String): MatchedEpisode? {
         val matcher = matchers.firstOrNull { it.matches(fileName) }
+        if(matcher != null){
+            logger.debug("Matcher", matcher.javaClass.toString())
+        }
 
         return matcher?.extract(fileName)
-    }
-
-    private fun reformattedFileName(fileName: String): String {
-
-        return formatter.format(component)
     }
 }
 

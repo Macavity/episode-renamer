@@ -7,6 +7,6 @@ class EpisodeFormatter : Formatter {
         val season = matchedEpisode.season.toString().padStart(2, '0')
         val episode = matchedEpisode.episode.toString().padStart(2, '0')
 
-        return "${matchedEpisode.show} - S${season}E${episode}"
+        return "${matchedEpisode.show} - S${season}E${episode}.mp4"
     }
 }
