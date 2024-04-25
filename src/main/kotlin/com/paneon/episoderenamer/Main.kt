@@ -32,7 +32,7 @@ fun main(args: Array<String>) {
     val matchers = listOf(
         GermanVerboseMatcher(shows),
         PlexMatcher(shows),
-        JDownloaderMatcher()
+        JDownloaderMatcher(shows)
     )
 
     val fileRenamer = FileRenamer(
