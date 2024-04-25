@@ -1,8 +1,10 @@
 package com.paneon.episoderenamer.rename.matcher
 
 import com.paneon.episoderenamer.shows.Show
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 
 class JDownloaderMatcherTest {
     private val shows = listOf(Show("My Show"), Show("Another Show Here"), Show("Dr. Episode", listOf("Dr Episode")))
@@ -10,10 +12,11 @@ class JDownloaderMatcherTest {
 
     @Test
     fun matches() {
-        val filenames = listOf(
-            "My.Show.S01E07.German.123a.AAC.worD.x264.mp4",
-            "Another.Show.Here.S01E07.German.4050c.AAC.Some.thing.mp4",
-        )
+        val filenames =
+            listOf(
+                "My.Show.S01E07.German.123a.AAC.worD.x264.mp4",
+                "Another.Show.Here.S01E07.German.4050c.AAC.Some.thing.mp4",
+            )
 
         filenames.forEach { filename ->
             assertTrue(matcher.matches(filename), "Filename should match: $filename")
@@ -31,9 +34,9 @@ class JDownloaderMatcherTest {
     }
 
     @Test
-    fun aliasesEpisode(){
+    fun aliasesEpisode() {
         val filename = "Dr.Episode.S01E45.123a.AAC.worD.x264.mp4"
-        val matches = matcher.matches(filename) ?: fail()
+        val matches = matcher.matches(filename)
         val actual = matcher.extract(filename) ?: fail()
 
         assertEquals(true, matches)

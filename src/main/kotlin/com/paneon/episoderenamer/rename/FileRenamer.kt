@@ -13,7 +13,6 @@ enum class Mode {
     COPY,
 }
 
-
 class FileRenamer(
     private val dryRun: Boolean,
     private val matchers: List<FileNameMatcher>,
@@ -22,7 +21,10 @@ class FileRenamer(
     private val replaceFiles: Boolean,
     private val logger: Logger,
 ) {
-    fun renameFilesInDirectory(sourceDirectoryPath: String, targetDirectoryPath: String) {
+    fun renameFilesInDirectory(
+        sourceDirectoryPath: String,
+        targetDirectoryPath: String,
+    ) {
         val sourceDirectory = File(sourceDirectoryPath)
         val targetDirectory = File(targetDirectoryPath)
 
@@ -64,12 +66,20 @@ class FileRenamer(
                 }
             }
 
-            val action = if (!dryRun) "✅ ${mode.name} with new name" else "⏸\uFE0F ${mode.name} with new name (Dry Run)"
+            val action =
+                if (!dryRun) {
+                    "✅ ${mode.name} with new name"
+                } else {
+                    "⏸\uFE0F ${mode.name} with new name (Dry Run)"
+                }
 
-            val performOperation: (File, File) -> Unit = when (mode) {
-                Mode.COPY -> { src, dst -> Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING) }
-                Mode.MOVE -> { src, dst -> src.renameTo(dst) }
-            }
+            val performOperation: (File, File) -> Unit =
+                when (mode) {
+                    Mode.COPY -> { src, dst ->
+                        Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                    }
+                    Mode.MOVE -> { src, dst -> src.renameTo(dst) }
+                }
 
             if (!dryRun) {
                 performOperation(file, targetFile)
@@ -79,7 +89,7 @@ class FileRenamer(
                 originalName = file.name,
                 newName = newName,
                 targetName = targetFile.parent.toString(),
-                action = action
+                action = action,
             )
         }
     }
@@ -93,4 +103,3 @@ class FileRenamer(
         return matcher?.extract(fileName)
     }
 }
-

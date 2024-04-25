@@ -1,12 +1,12 @@
 package com.paneon.episoderenamer.rename.formatter
 
 import com.paneon.episoderenamer.rename.matcher.MatchedEpisode
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 
 class EpisodeFormatterTest {
     private val formatter = EpisodeFormatter()
+
     @Test
     fun format() {
         val episode = MatchedEpisode("My Show", 1, 6)

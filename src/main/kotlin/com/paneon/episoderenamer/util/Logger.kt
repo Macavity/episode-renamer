@@ -1,12 +1,16 @@
 package com.paneon.episoderenamer.util
 
 enum class LoggerLevel {
-    INFO, VERBOSE
+    INFO,
+    VERBOSE,
 }
 
 class Logger(
     private val loggerLevel: LoggerLevel = LoggerLevel.INFO,
 ) {
+    companion object {
+        private const val CONSOLE_LEFT_COL_WIDTH = 18
+    }
 
     private fun separator() {
         println("---------------------------")
@@ -16,13 +20,21 @@ class Logger(
         printConsoleLine("Info", message)
     }
 
-    fun debug(label: String, message: String) {
+    fun debug(
+        label: String,
+        message: String,
+    ) {
         if (loggerLevel == LoggerLevel.VERBOSE) {
             printConsoleLine(label, message)
         }
     }
 
-    fun infoBlock(originalName: String, newName: String, targetName: String, action: String) {
+    fun infoBlock(
+        originalName: String,
+        newName: String,
+        targetName: String,
+        action: String,
+    ) {
         separator()
         printConsoleLine("File", originalName)
         printConsoleLine("New Name", newName)
@@ -30,14 +42,20 @@ class Logger(
         printConsoleLine("Action", action)
     }
 
-    fun skipBlock(originalName: String, action: String = "❌ Skip") {
+    fun skipBlock(
+        originalName: String,
+        action: String = "❌ Skip",
+    ) {
         separator()
         printConsoleLine("File", originalName)
         printConsoleLine("Action", action)
     }
 
-    private fun printConsoleLine(label: String, content: String) {
-        val paddedLabel = label.padEnd(18, ' ')
+    private fun printConsoleLine(
+        label: String,
+        content: String,
+    ) {
+        val paddedLabel = label.padEnd(CONSOLE_LEFT_COL_WIDTH, ' ')
         println("$paddedLabel | $content")
     }
 

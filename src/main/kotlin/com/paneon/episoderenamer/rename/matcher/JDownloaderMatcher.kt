@@ -2,7 +2,7 @@ package com.paneon.episoderenamer.rename.matcher
 
 import com.paneon.episoderenamer.shows.Show
 
-class JDownloaderMatcher(val shows: List<Show>): FileNameMatcher {
+class JDownloaderMatcher(val shows: List<Show>) : FileNameMatcher {
     private val regex = Regex("(.*?) S(\\d{2})E(\\d{2})")
 
     override fun matches(filename: String): Boolean {
@@ -17,7 +17,9 @@ class JDownloaderMatcher(val shows: List<Show>): FileNameMatcher {
 
     override fun extract(filename: String): MatchedEpisode? {
         val sanitizedFilename = sanitize(filename)
-        val matchResult = regex.find(sanitizedFilename) ?: throw IllegalArgumentException("Filename does not match: $filename")
+        val matchResult =
+            regex.find(sanitizedFilename)
+                ?: throw IllegalArgumentException("Filename does not match: $filename")
         val (extractedName, season, episode) = matchResult.destructured
 
         val showName = resolveShowName(extractedName) ?: return null
@@ -28,8 +30,13 @@ class JDownloaderMatcher(val shows: List<Show>): FileNameMatcher {
     private fun resolveShowName(input: String): String? {
         val inputName = input.trim()
 
-        for(show in shows){
-            if(show.name.equals(inputName, ignoreCase = true) || show.aliases.any { alias -> alias.equals(inputName, ignoreCase = true) }){
+        for (show in shows) {
+            if (show.name.equals(inputName, ignoreCase = true) ||
+                show.aliases.any {
+                        alias ->
+                    alias.equals(inputName, ignoreCase = true)
+                }
+            ) {
                 return show.name
             }
         }

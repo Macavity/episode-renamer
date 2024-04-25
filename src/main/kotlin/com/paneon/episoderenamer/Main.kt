@@ -18,9 +18,10 @@ fun main(args: Array<String>) {
     val replaceFiles = "--replace" in args
     val sourceDirectory = dotenv["SOURCE_DIRECTORY"]
     val targetDirectory = dotenv["TARGET_DIRECTORY"]
-    val logger = Logger(
-        loggerLevel = if("--verbose" in args) LoggerLevel.VERBOSE else LoggerLevel.INFO,
-    )
+    val logger =
+        Logger(
+            loggerLevel = if ("--verbose" in args) LoggerLevel.VERBOSE else LoggerLevel.INFO,
+        )
     val shows = ShowRepository().findAll()
 
     println("Episode Renamer")
@@ -29,21 +30,23 @@ fun main(args: Array<String>) {
     println("Source Directory: $sourceDirectory")
     println("Target Directory: $targetDirectory")
 
-    val matchers = listOf(
-        GermanVerboseMatcher(shows),
-        PlexMatcher(shows),
-        JDownloaderMatcher(shows)
-    )
+    val matchers =
+        listOf(
+            GermanVerboseMatcher(shows),
+            PlexMatcher(shows),
+            JDownloaderMatcher(shows),
+        )
 
-    val fileRenamer = FileRenamer(
-        dryRun = dryRun,
-        matchers = matchers,
-        formatter = EpisodeFormatter(),
-        mode = if(useCopy) Mode.COPY else Mode.MOVE,
-        replaceFiles = replaceFiles,
-        logger = logger
-    )
+    val fileRenamer =
+        FileRenamer(
+            dryRun = dryRun,
+            matchers = matchers,
+            formatter = EpisodeFormatter(),
+            mode = if (useCopy) Mode.COPY else Mode.MOVE,
+            replaceFiles = replaceFiles,
+            logger = logger,
+        )
     fileRenamer.renameFilesInDirectory(sourceDirectoryPath = sourceDirectory, targetDirectoryPath = targetDirectory)
 
-    //val fileMover = com.paneon.episoderenamer.move.FileMover(dryRun, logger)
+    // val fileMover = com.paneon.episoderenamer.move.FileMover(dryRun, logger)
 }

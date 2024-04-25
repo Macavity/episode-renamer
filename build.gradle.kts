@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.21"
     id("io.gitlab.arturbosch.detekt") version "1.18.1"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     application
 }
 
@@ -18,7 +19,7 @@ dependencies {
 
 detekt {
     toolVersion = "1.18.1"
-    input = files("src/main/kotlin")
+    source = files("src/main/kotlin")
     parallel = true
     buildUponDefaultConfig = true
 }

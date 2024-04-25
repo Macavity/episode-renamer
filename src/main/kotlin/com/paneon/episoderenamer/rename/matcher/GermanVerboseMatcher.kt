@@ -18,8 +18,9 @@ class GermanVerboseMatcher(shows: List<Show>) : FileNameMatcher {
 
     override fun extract(filename: String): MatchedEpisode {
         val sanitizedFilename = sanitize(filename)
-        val matchResult = regex.find(sanitizedFilename)
-            ?: throw IllegalArgumentException("Filename does not match: $filename")
+        val matchResult =
+            regex.find(sanitizedFilename)
+                ?: throw IllegalArgumentException("Filename does not match: $filename")
         val (episode, season, showName) = matchResult.destructured
         return MatchedEpisode(show = showName, season = season.toInt(), episode = episode.toInt())
     }
