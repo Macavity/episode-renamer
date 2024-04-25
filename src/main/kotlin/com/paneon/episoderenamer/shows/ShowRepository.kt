@@ -20,7 +20,7 @@ class ShowRepository {
             Show("Digimon Tamers"),
             Show("Digimon Frontier"),
             Show("Dr. Stone"),
-            Show("Dr. Slump"),
+            Show("Dr. Slump", listOf("Dr Slump")),
             Show("Elfen Lied"),
             Show("Frieren Beyond Journey's End"),
             Show("Fullmetal Alchemist Brotherhood"),
