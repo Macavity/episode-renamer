@@ -46,7 +46,10 @@ fun main(args: Array<String>) {
             replaceFiles = replaceFiles,
             logger = logger,
         )
-    fileRenamer.renameFilesInDirectory(sourceDirectoryPath = sourceDirectory, targetDirectoryPath = targetDirectory)
+    fileRenamer.renameFilesInDirectory(
+        sourceDirectoryPath = sourceDirectory,
+        targetDirectoryPath = targetDirectory,
+    )
 
     // val fileMover = com.paneon.episoderenamer.move.FileMover(dryRun, logger)
 }
