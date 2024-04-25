@@ -9,8 +9,8 @@ class EpisodeFormatterTest {
     private val formatter = EpisodeFormatter()
     @Test
     fun format() {
-        val episode = MatchedEpisode("Air Master", 1, 6)
-        val expected = "Air Master - S01E06"
+        val episode = MatchedEpisode("My Show", 1, 6)
+        val expected = "My Show - S01E06.mp4"
         val actual = formatter.format(episode)
 
         assertEquals(expected, actual, "Format does not match expected")
