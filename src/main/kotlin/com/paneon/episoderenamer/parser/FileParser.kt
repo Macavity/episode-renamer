@@ -1,8 +1,12 @@
-package com.paneon.episoderenamer.rename
+package com.paneon.episoderenamer.parser
 
-import com.paneon.episoderenamer.rename.formatter.Formatter
-import com.paneon.episoderenamer.rename.matcher.FileNameMatcher
-import com.paneon.episoderenamer.rename.matcher.MatchedEpisode
+import com.paneon.episoderenamer.episode.createEpisodeFile
+import com.paneon.episoderenamer.exception.MatcherNotFoundException
+import com.paneon.episoderenamer.exception.ShowNotFoundException
+import com.paneon.episoderenamer.exception.UnexpectedFileNameException
+import com.paneon.episoderenamer.parser.formatter.Formatter
+import com.paneon.episoderenamer.parser.matcher.FileNameMatcher
+import com.paneon.episoderenamer.shows.ShowRepository
 import com.paneon.episoderenamer.util.Logger
 import java.io.File
 import java.nio.file.Files
@@ -14,11 +18,12 @@ enum class Mode {
     COPY,
 }
 
-class FileRenamer(
+class FileParser(
     private val dryRun: Boolean,
     private val matchers: List<FileNameMatcher>,
     private val formatter: Formatter,
     private val mode: Mode,
+    private val showRepository: ShowRepository,
     private val replaceFiles: Boolean,
     private val logger: Logger,
 ) {
@@ -32,25 +37,30 @@ class FileRenamer(
         ensureDirectoriesExist(sourceDirectoryPath, targetDirectoryPath)
 
         sourceDirectory.listFiles { file -> file.isFile && file.extension == "mp4" }?.forEach { file ->
-            processFile(file = file, targetDirectory = targetDirectory)
+            try {
+                processFile(file = file, targetDirectory = targetDirectory)
+            } catch (exception: Exception) {
+                logger.skipBlock(file.name, action = exception.message ?: "Unknown Error")
+            }
         }
     }
 
+    @Throws(UnexpectedFileNameException::class, ShowNotFoundException::class, MatcherNotFoundException::class)
     private fun processFile(
         file: File,
         targetDirectory: File,
     ) {
-        val matchedEpisode = matchEpisode(file.name)
+        val matcher = findFileNameMatcher(file)
 
-        if (matchedEpisode == null) {
-            logger.skipBlock(file.name)
-            return
-        }
+        val episodeMatch = matcher.matches(file.name) ?: throw UnexpectedFileNameException(file.name)
 
-        val showDirectory = File(targetDirectory, matchedEpisode.show.replace("/", "_")) // Safe directory name
+        val show = showRepository.firstOrNull(episodeMatch.show) ?: throw ShowNotFoundException(episodeMatch.show)
+        val episodeFile = createEpisodeFile(sourceFilePath = file.path, episodeMatch = episodeMatch, show = show)
+
+        val showDirectory = File(targetDirectory, episodeFile.show.name.replace("/", "_")) // Safe directory name
         ensureDirectoryExists(showDirectory)
 
-        val newName = formatter.format(matchedEpisode)
+        val newName = formatter.format(episodeFile)
         val targetFile = File(showDirectory, newName)
 
         if (checkFileExistence(targetFile, file)) return
@@ -67,6 +77,7 @@ class FileRenamer(
                 Mode.COPY -> { src, dst ->
                     Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 }
+
                 Mode.MOVE -> { src, dst -> src.renameTo(dst) }
             }
 
@@ -97,13 +108,15 @@ class FileRenamer(
         return false
     }
 
-    private fun matchEpisode(fileName: String): MatchedEpisode? {
-        val matcher = matchers.firstOrNull { it.matches(fileName) }
-        if (matcher != null) {
-            logger.debug("Matcher", matcher.javaClass.toString())
-        }
+    @Throws(MatcherNotFoundException::class)
+    private fun findFileNameMatcher(sourceFile: File): FileNameMatcher {
+        val fileName = sourceFile.name
+        val matcher =
+            matchers.firstOrNull { it.matches(fileName) != null } ?: throw MatcherNotFoundException(sourceFile.name)
 
-        return matcher?.extract(fileName)
+        logger.debug("Matcher", matcher.javaClass.toString())
+
+        return matcher
     }
 
     private fun ensureDirectoryExists(directory: File) {

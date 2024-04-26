@@ -1,11 +1,11 @@
 package com.paneon.episoderenamer
 
-import com.paneon.episoderenamer.rename.FileRenamer
-import com.paneon.episoderenamer.rename.Mode
-import com.paneon.episoderenamer.rename.formatter.EpisodeFormatter
-import com.paneon.episoderenamer.rename.matcher.GermanVerboseMatcher
-import com.paneon.episoderenamer.rename.matcher.JDownloaderMatcher
-import com.paneon.episoderenamer.rename.matcher.PlexMatcher
+import com.paneon.episoderenamer.parser.FileParser
+import com.paneon.episoderenamer.parser.Mode
+import com.paneon.episoderenamer.parser.formatter.EpisodeFormatter
+import com.paneon.episoderenamer.parser.matcher.GermanVerboseMatcher
+import com.paneon.episoderenamer.parser.matcher.JDownloaderMatcher
+import com.paneon.episoderenamer.parser.matcher.PlexMatcher
 import com.paneon.episoderenamer.shows.ShowRepository
 import com.paneon.episoderenamer.util.Logger
 import com.paneon.episoderenamer.util.LoggerLevel
@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
         Logger(
             loggerLevel = if ("--verbose" in args) LoggerLevel.VERBOSE else LoggerLevel.INFO,
         )
-    val shows = ShowRepository().findAll()
+    val showRepository = ShowRepository(ShowRepository.findAll())
 
     println("Episode Renamer")
     println("Dry-Run: $dryRun")
@@ -32,24 +32,23 @@ fun main(args: Array<String>) {
 
     val matchers =
         listOf(
-            GermanVerboseMatcher(shows),
-            PlexMatcher(shows),
-            JDownloaderMatcher(shows),
+            GermanVerboseMatcher(showRepository),
+            PlexMatcher(showRepository),
+            JDownloaderMatcher(showRepository),
         )
 
-    val fileRenamer =
-        FileRenamer(
+    val fileParser =
+        FileParser(
             dryRun = dryRun,
             matchers = matchers,
             formatter = EpisodeFormatter(),
             mode = if (useCopy) Mode.COPY else Mode.MOVE,
             replaceFiles = replaceFiles,
             logger = logger,
+            showRepository = showRepository,
         )
-    fileRenamer.renameFilesInDirectory(
+    fileParser.renameFilesInDirectory(
         sourceDirectoryPath = sourceDirectory,
         targetDirectoryPath = targetDirectory,
     )
-
-    // val fileMover = com.paneon.episoderenamer.move.FileMover(dryRun, logger)
 }
