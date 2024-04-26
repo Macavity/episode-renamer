@@ -2,21 +2,12 @@ package com.paneon.episoderenamer.shows
 
 class ShowRepository(private val shows: List<Show>) {
     companion object {
+        // Re-Add when configuration allows to target different directories
+        // Show("Air Master"),
         fun findAll(): List<Show> {
+            // Convert listOf to yaml structure
+
             return listOf(
-                Show("Air Gear"),
-                // Re-Add when configuration allows to target different directories
-                // Show("Air Master"),
-                Show("Arifureta From Commonplace to World's Strongest"),
-                Show("A Certain Scientific Railgun"),
-                Show("A Certain Magical Index"),
-                Show("A Returner's Magic Should Be Special"),
-                Show("Beyblade"),
-                Show("Berserk of Gluttony"),
-                Show("Bofuri I Don't Want to Get Hurt, so I'll Max Out My Defense"),
-                Show("Charlotte"),
-                Show("Chained Soldier"),
-                Show("Danmachi Is It Wrong to Try to Pick Up Girls in a Dungeon"),
                 Show("Detektiv Conan"),
                 Show("Digimon Tamers"),
                 Show("Digimon Frontier"),
