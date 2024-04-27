@@ -1,6 +1,5 @@
 package com.paneon.episoderenamer
 
-import com.paneon.episoderenamer.config.ConfigShows
 import com.paneon.episoderenamer.parser.FileParser
 import com.paneon.episoderenamer.parser.Mode
 import com.paneon.episoderenamer.parser.formatter.EpisodeFormatter
@@ -26,8 +25,8 @@ fun main(args: Array<String>) {
         Logger(
             loggerLevel = if ("--verbose" in args) LoggerLevel.VERBOSE else LoggerLevel.INFO,
         )
-    val showConfig = loadConfig()
-    val showRepository = ShowRepository(showConfig.shows)
+    val configShows = loadConfig()
+    val showRepository = ShowRepository(configShows)
 
     println("Episode Renamer")
     println("Dry-Run: $dryRun")
@@ -58,7 +57,7 @@ fun main(args: Array<String>) {
     )
 }
 
-fun loadConfig(): ConfigShows {
+fun loadConfig(): List<Show> {
 //    val constructor = Constructor(ConfigShows::class.java, LoaderOptions())
 //    val showDescription = TypeDescription(ConfigShows::class.java)
 //    constructor.addTypeDescription(showDescription)
@@ -97,5 +96,5 @@ fun loadConfig(): ConfigShows {
             Show(name, aliasStrings)
         }
 
-    return ConfigShows(shows)
+    return shows
 }
