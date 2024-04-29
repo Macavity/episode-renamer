@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.yaml:snakeyaml:2.2")
 }

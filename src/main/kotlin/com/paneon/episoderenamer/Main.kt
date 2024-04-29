@@ -1,8 +1,7 @@
 package com.paneon.episoderenamer
 
+import com.paneon.episoderenamer.mover.FileMover
 import com.paneon.episoderenamer.parser.FileParser
-import com.paneon.episoderenamer.parser.Mode
-import com.paneon.episoderenamer.parser.formatter.EpisodeFormatter
 import com.paneon.episoderenamer.parser.matcher.GermanVerboseMatcher
 import com.paneon.episoderenamer.parser.matcher.JDownloaderMatcher
 import com.paneon.episoderenamer.parser.matcher.PlexMatcher
@@ -40,27 +39,30 @@ fun main(args: Array<String>) {
             PlexMatcher(showRepository),
             JDownloaderMatcher(showRepository),
         )
-
     val fileParser =
         FileParser(
-            dryRun = dryRun,
             matchers = matchers,
-            formatter = EpisodeFormatter(),
-            mode = if (useCopy) Mode.COPY else Mode.MOVE,
-            replaceFiles = replaceFiles,
             logger = logger,
             showRepository = showRepository,
         )
-    fileParser.renameFilesInDirectory(
-        sourceDirectoryPath = sourceDirectory,
-        targetDirectoryPath = targetDirectory,
-    )
+    val fileMover =
+        FileMover(
+            targetDirectoryPath = targetDirectory,
+            dryRun = dryRun,
+            logger = logger,
+            replaceFiles = replaceFiles,
+        )
+    val episodeFiles =
+        fileParser.renameFilesInDirectory(
+            sourceDirectoryPath = sourceDirectory,
+        )
+
+    episodeFiles.forEach { episodeFile ->
+        fileMover.processFile(episodeFile = episodeFile, useCopy = useCopy)
+    }
 }
 
 fun loadConfig(): List<Show> {
-//    val constructor = Constructor(ConfigShows::class.java, LoaderOptions())
-//    val showDescription = TypeDescription(ConfigShows::class.java)
-//    constructor.addTypeDescription(showDescription)
     val yaml = Yaml()
     val showConfigFile = File("config/shows.yml")
     val config: Map<String, Any> = yaml.load(showConfigFile.inputStream())

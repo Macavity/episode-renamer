@@ -6,14 +6,16 @@ abstract class BaseFileNameMatcher(private val showRepository: ShowRepository) :
     abstract val regex: Regex
 
     override fun matches(sourceFileName: String): EpisodeMatch? {
-        val sanitizedFileName = sanitize(sourceFileName)
-        val matchResult = regex.find(sanitizedFileName) ?: return null
+        return run {
+            val sanitizedFileName = sanitize(sourceFileName)
+            val matchResult = regex.find(sanitizedFileName) ?: return@run null
 
-        val episode = matchResult.groups["episode"]?.value ?: return null
-        val season = matchResult.groups["season"]?.value ?: return null
-        val showName = matchResult.groups["show"]?.value ?: return null
-        val show = showRepository.firstOrNull(showName) ?: return null
+            val episode = matchResult.groups["episode"]?.value ?: return@run null
+            val season = matchResult.groups["season"]?.value ?: return@run null
+            val showName = matchResult.groups["show"]?.value ?: return@run null
+            val show = showRepository.firstOrNull(showName) ?: return@run null
 
-        return EpisodeMatch(show.name, season, episode)
+            EpisodeMatch(show.name, season, episode)
+        }
     }
 }
