@@ -46,7 +46,7 @@ class ConfigLoader {
         val data: ConfigFile = yaml.decodeFromString(ConfigFile.serializer(), configFileContent)
 
         val config =
-            data?.shows?.mapNotNull { show ->
+            data.shows?.mapNotNull { show ->
                 if (show.name == null) {
                     println("Show name is missing in config file")
                     null
