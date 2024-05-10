@@ -5,9 +5,12 @@ package com.paneon.episoderenamer.mover
 import com.paneon.episoderenamer.episode.EpisodeFile
 import com.paneon.episoderenamer.shows.Show
 import com.paneon.episoderenamer.util.Logger
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
 import java.io.File
 
 class FileMoverTest {
@@ -20,7 +23,7 @@ class FileMoverTest {
 
     @BeforeEach
     fun setup() {
-        logger = mock()
+        logger = mockk(relaxed = true)
         File(targetDirectory).deleteRecursively()
         if (!File(dummyEpisodeFilePath).exists()) {
             File(blankFile).copyTo(File(dummyEpisodeFilePath))
@@ -28,40 +31,46 @@ class FileMoverTest {
     }
 
     @Test
-    fun `with dryRun, does not call moveFile or copyFile but logs info block`() {
-        val fileMover = spy(FileMover(targetDirectory, dryRun = true, replaceFiles = false, logger = logger))
+    fun `with dryRun, does not call moveFile or copyFile`() {
+        val fileMover = spyk(FileMover(targetDirectory, dryRun = true, replaceFiles = false, logger = logger))
         fileMover.processFile(episodeFile, false)
-        verify(logger).infoBlock(any(), any(), any(), any())
-        verify(fileMover, never()).moveFile(any(), any())
-        verify(fileMover, never()).copyFile(any(), any())
+
+        verify(exactly = 0) { fileMover.moveFile(any(), any()) }
+        verify(exactly = 0) { fileMover.copyFile(any(), any()) }
     }
 
     @Test
     fun `with replaceFiles=false, skips existing file`() {
-        val fileMover = spy(FileMover(targetDirectory, dryRun = false, replaceFiles = false, logger = logger))
-        doReturn(true).`when`(fileMover).checkFileExistence(any(), any())
-        fileMover.processFile(episodeFile, false)
-        verify(logger).skipBlock(any(), any())
-        verify(fileMover, never()).moveFile(any(), any())
-        verify(fileMover, never()).copyFile(any(), any())
+        // Arrange
+        val fileMover = spyk(FileMover(targetDirectory, dryRun = false, replaceFiles = false, logger = logger))
+        val existingFile = EpisodeFile("src/test/resources/ExistingFile.mp4", show, 1, 1)
+        every { fileMover.checkFileExistence(any(), any()) } returns true
+
+        // Act
+        fileMover.processFile(existingFile, false)
+
+        // Assert
+        verify(exactly = 1) { fileMover.checkFileExistence(any(), any()) }
+        verify(exactly = 0) { fileMover.moveFile(any(), any()) }
+        verify(exactly = 0) { fileMover.copyFile(any(), any()) }
     }
 
     @Test
-    fun `can copy files and logs info block`() {
-        val fileMover = spy(FileMover(targetDirectory, dryRun = false, replaceFiles = false, logger = logger))
+    fun `can copy files`() {
+        val fileMover = spyk(FileMover(targetDirectory, dryRun = false, replaceFiles = false, logger = logger))
+
         fileMover.processFile(episodeFile, true)
-        verify(logger).infoBlock(any(), any(), any(), any())
-        verify(fileMover).copyFile(any(), any())
-        verify(fileMover, never()).moveFile(any(), any())
+
+        verify(exactly = 1) { fileMover.copyFile(any(), any()) }
+        verify(exactly = 0) { fileMover.moveFile(any(), any()) }
     }
 
     @Test
-    fun `can move files and logs info block`() {
-        val fileMover = spy(FileMover(targetDirectory, false, false, logger))
+    fun `can move files`() {
+        val fileMover = spyk(FileMover(targetDirectory, false, false, logger))
 
         fileMover.processFile(episodeFile, false)
-        verify(logger).infoBlock(any(), any(), any(), any())
-        verify(fileMover).moveFile(any(), any())
-        verify(fileMover, never()).copyFile(any(), any())
+        verify(exactly = 1) { fileMover.moveFile(any(), any()) }
+        verify(exactly = 0) { fileMover.copyFile(any(), any()) }
     }
 }

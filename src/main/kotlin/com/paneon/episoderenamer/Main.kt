@@ -5,13 +5,11 @@ import com.paneon.episoderenamer.parser.FileParser
 import com.paneon.episoderenamer.parser.matcher.GermanVerboseMatcher
 import com.paneon.episoderenamer.parser.matcher.JDownloaderMatcher
 import com.paneon.episoderenamer.parser.matcher.PlexMatcher
-import com.paneon.episoderenamer.shows.Show
 import com.paneon.episoderenamer.shows.ShowRepository
+import com.paneon.episoderenamer.util.ConfigLoader
 import com.paneon.episoderenamer.util.Logger
 import com.paneon.episoderenamer.util.LoggerLevel
 import io.github.cdimascio.dotenv.dotenv
-import org.yaml.snakeyaml.Yaml
-import java.io.File
 
 fun main(args: Array<String>) {
     val dotenv = dotenv()
@@ -24,8 +22,8 @@ fun main(args: Array<String>) {
         Logger(
             loggerLevel = if ("--verbose" in args) LoggerLevel.VERBOSE else LoggerLevel.INFO,
         )
-    val configShows = loadConfig()
-    val showRepository = ShowRepository(configShows)
+    val config = ConfigLoader().loadConfig()
+    val showRepository = ShowRepository(config.shows)
 
     println("Episode Renamer")
     println("Dry-Run: $dryRun")
@@ -62,41 +60,41 @@ fun main(args: Array<String>) {
     }
 }
 
-fun loadConfig(): List<Show> {
-    val yaml = Yaml()
-    val showConfigFile = File("config/shows.yml")
-    val config: Map<String, Any> = yaml.load(showConfigFile.inputStream())
-
-    val showsList = config["shows"]
-    if (showsList !is List<*>) {
-        throw IllegalArgumentException("Invalid config: 'shows' is not a list")
-    }
-
-    val shows =
-        showsList.map { showMap ->
-            if (showMap !is Map<*, *>) {
-                throw IllegalArgumentException("Invalid config: show is not a map")
-            }
-
-            val name = showMap["name"]
-            if (name !is String) {
-                throw IllegalArgumentException("Invalid config: 'name' is not a string")
-            }
-
-            val aliases = showMap["aliases"]
-            val aliasStrings =
-                if (aliases is List<*>) {
-                    val aliasStrings = aliases.filterIsInstance<String>()
-                    if (aliasStrings.size != aliases.size) {
-                        throw IllegalArgumentException("Invalid config: 'aliases' contains non-string values")
-                    }
-                    aliasStrings
-                } else {
-                    listOf<String>()
-                }
-
-            Show(name, aliasStrings)
-        }
-
-    return shows
-}
+// fun loadConfig(): List<Show> {
+//    val yaml = Yaml()
+//    val showConfigFile = File("config/shows.yml")
+//    val config: Map<String, Any> = yaml.load(showConfigFile.inputStream())
+//
+//    val showsList = config["shows"]
+//    if (showsList !is List<*>) {
+//        throw InvalidConfigException("Invalid config: 'shows' is not a list")
+//    }
+//
+//    val shows =
+//        showsList.map { showMap ->
+//            if (showMap !is Map<*, *>) {
+//                throw InvalidConfigException("Invalid config: show is not a map")
+//            }
+//
+//            val name = showMap["name"]
+//            if (name !is String) {
+//                throw InvalidConfigException("Invalid config: 'name' is not a string")
+//            }
+//
+//            val aliases = showMap["aliases"]
+//            val aliasStrings =
+//                if (aliases is List<*>) {
+//                    val aliasStrings = aliases.filterIsInstance<String>()
+//                    if (aliasStrings.size != aliases.size) {
+//                        throw InvalidConfigException("Invalid config: 'aliases' contains non-string values")
+//                    }
+//                    aliasStrings
+//                } else {
+//                    listOf<String>()
+//                }
+//
+//            Show(name, aliasStrings)
+//        }
+//
+//    return shows
+// }
