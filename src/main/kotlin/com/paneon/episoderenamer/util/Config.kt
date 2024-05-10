@@ -5,6 +5,7 @@ import com.charleskorn.kaml.YamlConfiguration
 import com.paneon.episoderenamer.shows.Show
 import kotlinx.serialization.Serializable
 import java.io.File
+import java.io.IOException
 
 @Serializable
 data class ConfigFile(
@@ -21,7 +22,7 @@ data class Config(
     val shows: List<Show>,
 )
 
-class ConfigLoader() {
+class ConfigLoader {
     fun getConfigFileContent(): String {
         val configFile = File("config/shows.yml")
         val defaultConfigFile = File("config/shows.yml.dist")
@@ -33,26 +34,16 @@ class ConfigLoader() {
                 println("Config file not found, using default config")
                 defaultConfigFile.readText()
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             println("Error reading config file: ${e.message}")
             throw e
         }
     }
 
     fun loadConfig(): Config {
-        val configFileContent: String
-        try {
-            configFileContent = getConfigFileContent()
-        } catch (e: Exception) {
-            throw RuntimeException("Error reading config file: ${e.message}")
-        }
+        val configFileContent = getConfigFileContent()
         val yaml = Yaml(configuration = YamlConfiguration(strictMode = false))
-        val data: ConfigFile? =
-            try {
-                yaml.decodeFromString(ConfigFile.serializer(), configFileContent)
-            } catch (e: Exception) {
-                throw RuntimeException("Error parsing config file: ${e.message}")
-            }
+        val data: ConfigFile = yaml.decodeFromString(ConfigFile.serializer(), configFileContent)
 
         val config =
             data?.shows?.mapNotNull { show ->
