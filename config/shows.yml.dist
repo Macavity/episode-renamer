@@ -1,0 +1,7 @@
+# Add all shows which you want to target in this config file.
+# Aliases are recognized and will be replaced with the original name.
+shows:
+  - name: Dragon Ball
+    aliases:
+      - Dragonball
+  - name: Another Show
