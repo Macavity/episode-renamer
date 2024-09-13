@@ -16,6 +16,7 @@ data class ConfigFile(
 data class ConfigShowEntry(
     val name: String?,
     val aliases: List<String> = emptyList(),
+    val seasonDirectories: Boolean = false,
 )
 
 data class Config(
@@ -51,7 +52,11 @@ class ConfigLoader {
                     println("Show name is missing in config file")
                     null
                 } else {
-                    Show(name = show.name, aliases = show.aliases)
+                    Show(
+                        name = show.name,
+                        aliases = show.aliases,
+                        seasonDirectories = show.seasonDirectories,
+                    )
                 }
             }?.let {
                 Config(shows = it)
