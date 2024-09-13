@@ -85,10 +85,9 @@ class FileMover(
     private fun getTargetDirectory(episodeFile: EpisodeFile): File {
         val showDirectory = File(targetDirectoryPath, episodeFile.show.name.replace("/", "_")) // Safe directory name
 
-        return if (episodeFile.show.seasonDirectories)
-            {
-                File(showDirectory, "Season ${episodeFile.season.toString().padStart(2, '0')}")
-            } else {
+        return if (episodeFile.show.seasonDirectories) {
+            File(showDirectory, "Season ${episodeFile.season.toString().padStart(2, '0')}")
+        } else {
             showDirectory
         }
     }
