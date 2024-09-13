@@ -24,16 +24,7 @@ class ConfigTest {
 
         // Define a Config object to be returned by loadConfig()
         val expectedConfig =
-            Config(
-                shows =
-                    listOf(
-                        Show(
-                            name = "Test Show",
-                            aliases = listOf("Alias 1", "Alias 2"),
-                            seasonDirectories = false,
-                        ),
-                    ),
-            )
+            Config(shows = listOf(Show(name = "Test Show", aliases = listOf("Alias 1", "Alias 2"), seasonDirectories = false)))
         every { configLoader.loadConfig() } returns expectedConfig
 
         // Act
