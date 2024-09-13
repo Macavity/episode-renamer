@@ -73,4 +73,21 @@ class FileMoverTest {
         verify(exactly = 1) { fileMover.moveFile(any(), any()) }
         verify(exactly = 0) { fileMover.copyFile(any(), any()) }
     }
+
+    @Test
+    fun `processFile should create season directory when seasonDirectories is true`() {
+        // Arrange
+        val showWithSeasonDirectories = Show("My Show", emptyList(), seasonDirectories = true)
+        val episodeFileWithSeason =
+            EpisodeFile("src/test/resources/My Show S01E04.mp4", showWithSeasonDirectories, 1, 4)
+        val fileMover = spyk(FileMover(targetDirectory, dryRun = false, replaceFiles = false, logger = logger))
+        val expectedDirectory = File(targetDirectory, "My Show/Season 01")
+
+        // Act
+        fileMover.processFile(episodeFileWithSeason, false)
+
+        // Assert
+        verify(exactly = 1) { fileMover.moveFile(any(), File(expectedDirectory, "My Show - S01E04.mp4")) }
+        assert(expectedDirectory.exists())
+    }
 }

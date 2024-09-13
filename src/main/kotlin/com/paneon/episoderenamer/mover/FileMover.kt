@@ -24,11 +24,12 @@ class FileMover(
         useCopy: Boolean,
     ) {
         val sourceFile = File(episodeFile.sourceFilePath)
-        val showDirectory = File(targetDirectoryPath, episodeFile.show.name.replace("/", "_")) // Safe directory name
-        val newName = EpisodeFormatter().format(episodeFile)
-        val targetFile = File(showDirectory, newName)
+        val targetDirectory = getTargetDirectory(episodeFile)
 
-        prepareDirectory(showDirectory)
+        val newName = EpisodeFormatter().format(episodeFile)
+        val targetFile = File(targetDirectory, newName)
+
+        prepareDirectory(targetDirectory)
 
         if (checkFileExistence(targetFile = targetFile, replaceFiles = replaceFiles)) {
             logger.skipBlock(episodeFile.sourceFilePath, LoggerAction.SKIP_FILE_EXISTS)
@@ -79,5 +80,13 @@ class FileMover(
         targetFile: File,
     ) {
         Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    private fun getTargetDirectory(episodeFile: EpisodeFile): File {
+        val showDirectory = File(targetDirectoryPath, episodeFile.show.name.replace("/", "_")) // Safe directory name
+
+        return if(episodeFile.show.seasonDirectories){
+            File(showDirectory, "Season ${episodeFile.season.toString().padStart(2, '0')}")
+        } else { showDirectory }
     }
 }
