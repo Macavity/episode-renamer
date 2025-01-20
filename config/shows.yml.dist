@@ -1,7 +1,11 @@
 # Add all shows which you want to target in this config file.
 # Aliases are recognized and will be replaced with the original name.
 shows:
+  # The name of the show and also the name of the target directory
   - name: Dragon Ball
+    # This flag creates directories for each season like "Season 01". default: false
+    seasonDirectories: true
+    # List of aliases which will be replaced with the original name
     aliases:
       - Dragonball
   - name: Another Show
